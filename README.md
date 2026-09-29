@@ -97,10 +97,17 @@ All models run locally on your machine. No API keys, no data sharing, and no sub
 - FastAPI (REST API)
 - PyTorch (Tensor operations & CUDA)
 - HuggingFace Transformers (Model inference)
-- LangChain (Text chunking and RAG orchestration)
+- LangChain (Text chunking, RAG, and Reranking)
 - FAISS (Local vector store)
 - SQLModel / SQLite (Metadata persistence)
 - PyMuPDF (PDF text extraction)
+
+**Models Used:**
+- **Summarization:** `facebook/bart-large-cnn`
+- **Embeddings:** `sentence-transformers/all-MiniLM-L6-v2`
+- **Retrieval Reranker:** `cross-encoder/ms-marco-MiniLM-L-6-v2`
+- **Q&A (RAG):** `google/flan-t5-base`
+- **Translation:** `Helsinki-NLP/opus-mt-*`
 
 ## Installation & Setup
 
