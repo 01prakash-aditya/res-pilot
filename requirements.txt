@@ -1,0 +1,49 @@
+# Core ML and NLP
+torch==2.6
+transformers>=4.40.0
+sentence-transformers==2.6.1
+accelerate>=0.25.0
+safetensors>=0.4.2
+sentencepiece>=0.2.0
+
+# LangChain & Components
+langchain==0.1.20
+langchain-community==0.0.38
+langchain-core==0.1.53
+langchain-text-splitters==0.0.2
+
+# PDF & File Processing
+PyMuPDF>=1.23.0
+pypdf>=3.10.0
+python-dotenv>=1.0.0
+
+# Vector Search
+faiss-cpu>=1.7.4
+
+# Web Framework & FastAPI
+fastapi>=0.110.0
+uvicorn>=0.23.0
+python-multipart>=0.0.7
+pydantic>=2.5.3
+
+# Database (SQLModel = SQLAlchemy + Pydantic unified)
+sqlmodel>=0.0.14
+
+# Auth & Rate Limiting
+slowapi>=0.1.9
+
+# Utility
+numpy>=1.24.0
+typing-extensions>=4.10.0
+tqdm>=4.66.0
+requests>=2.31.0
+
+# GGUF & Local Inference
+ctransformers>=0.2.27
+
+# Testing
+pytest>=7.0.0
+httpx>=0.24.0
+pytest-asyncio>=0.21.0
+keybert>=0.8.4
+hf_xet>=1.5.0
