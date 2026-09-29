@@ -31,6 +31,7 @@ flowchart TD
             BART[BART-Large-CNN\nSummarization]
             T5[Flan-T5-Base\nRAG Q&A]
             Embed[MiniLM-L6-v2\nEmbeddings]
+            Rerank[MS-MARCO-MiniLM\nCross-Encoder]
             Translate[Helsinki-NLP\nTranslation]
         end
     end
@@ -46,9 +47,10 @@ flowchart TD
     API_Summary -->|8. Request Translation| Translate
     
     UI_QA -->|9. Ask Question| API_QA
-    API_QA -->|10. Fetch Context| FAISS
-    FAISS -->|11. Context + Question| T5
-    T5 -->|12. Grounded Answer| UI_QA
+    API_QA -->|10. Broad Fetch (15 Chunks)| FAISS
+    FAISS -->|11. Filter to Top 3| Rerank
+    Rerank -->|12. Context + Question| T5
+    T5 -->|13. Grounded Answer| UI_QA
 ```
 
 ## Core Features
@@ -57,7 +59,7 @@ flowchart TD
 Upload any PDF, and ResPilot will automatically parse it, filter out academic noise (like headers and citations), chunk it, and run it through `facebook/bart-large-cnn`. For long documents, it uses a hierarchical summarization technique to generate a clean, highly formatted, paragraph-based overview of the entire paper.
 
 ### 2. Context-Aware Q&A (RAG)
-Stop using Ctrl+F. ResPilot chunks your document and stores it in a FAISS vector database using `all-MiniLM-L6-v2` embeddings. When you ask a question, the backend retrieves the most relevant paragraphs and feeds them to `google/flan-t5-base`. The result is a precise, concise, and structured answer (complete with LaTeX math rendering and markdown formatting) grounded strictly in the source text.
+Stop using Ctrl+F. ResPilot chunks your document and stores it in a FAISS vector database using `all-MiniLM-L6-v2` embeddings. When you ask a question, the backend retrieves a broad set of paragraphs from FAISS, scores and filters them down to the most highly relevant chunks using a `ms-marco-MiniLM-L-6-v2` **Cross-Encoder Reranker**, and feeds only the absolute best context to `google/flan-t5-base`. The result is a precise, concise, and structured answer (complete with LaTeX math rendering and markdown formatting) grounded strictly in the source text.
 
 ### 3. Multi-Language Translation
 Need to read a summary in another language? ResPilot uses the `Helsinki-NLP/opus-mt` model family to translate summaries into 11+ languages on the fly, entirely offline.

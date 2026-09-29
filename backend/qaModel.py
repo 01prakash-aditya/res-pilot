@@ -10,6 +10,10 @@ from langchain_community.llms import HuggingFacePipeline
 from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document as LCDocument
+from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+from langchain.retrievers import ContextualCompressionRetriever
+
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 from logger import get_logger
 
@@ -23,6 +27,7 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 DTYPE = torch.float16 if DEVICE == 'cuda' else torch.float32
 
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 QA_MODEL = "google/flan-t5-base"
 
 
@@ -105,6 +110,16 @@ def _get_qa_pipeline() -> HuggingFacePipeline:
     return HuggingFacePipeline(pipeline=pipe)
 
 
+@lru_cache(maxsize=1)
+def _get_reranker() -> HuggingFaceCrossEncoder:
+    """Load and cache the cross-encoder reranker model."""
+    logger.info(f"Loading Reranker model: {RERANKER_MODEL}")
+    return HuggingFaceCrossEncoder(
+        model_name=RERANKER_MODEL,
+        model_kwargs={"device": DEVICE}
+    )
+
+
 def initialize_qa_system(db: FAISS) -> RetrievalQA:
     """
     Assemble a RetrievalQA chain using the cached pipeline + a fresh retriever.
@@ -125,9 +140,20 @@ Answer:"""
 
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
+    # Fetch top 15 chunks broadly using FAISS
+    base_retriever = db.as_retriever(search_kwargs={"k": 15})
+
+    # Score and filter down to the top 3 best chunks
+    compressor = CrossEncoderReranker(model=_get_reranker(), top_n=3)
+    
+    rerank_retriever = ContextualCompressionRetriever(
+        base_compressor=compressor,
+        base_retriever=base_retriever
+    )
+
     return RetrievalQA.from_chain_type(
         llm=llm,
-        retriever=db.as_retriever(search_kwargs={"k": 3, "fetch_k": 5}),
+        retriever=rerank_retriever,
         chain_type="stuff",
         return_source_documents=True,
         chain_type_kwargs={"prompt": prompt},
