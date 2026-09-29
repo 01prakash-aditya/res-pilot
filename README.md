@@ -12,9 +12,9 @@ By leveraging state-of-the-art open-source NLP models running locally, ResPilot 
 
 The following diagram illustrates how the frontend interacts with the local FastAPI backend, and outlines the two-stage retrieval pipeline:
 
-1. **Ingestion:** Documents are extracted, chunked, and embedded into a local **FAISS** vector database using `all-MiniLM-L6-v2`. Concurrently, the full text is hierarchically summarized by `BART-Large-CNN`.
-2. **Two-Stage Retrieval (RAG):** When a user asks a question, the system first retrieves a broad set of 15 chunks from FAISS. Then, a `ms-marco` **Cross-Encoder Reranker** scores each chunk against the query, filtering the context down to the top 3 most highly relevant paragraphs to completely eliminate LLM hallucination.
-3. **Generation & Translation:** The reranked context is fed into `Flan-T5-Base` to generate a precise, markdown/LaTeX formatted answer. If requested, summaries are translated on-the-fly via local `Helsinki-NLP` models.
+1. **Ingestion (Steps 1-6):** Documents are extracted, chunked, and embedded into a local **FAISS** vector database using `all-MiniLM-L6-v2`. Concurrently, the full text is hierarchically summarized by `BART-Large-CNN`.
+2. **Two-Stage Retrieval (Steps 9-11):** When a user asks a question, the system first retrieves a broad set of 15 chunks from FAISS (Step 10). Then, a `ms-marco` **Cross-Encoder Reranker** scores each chunk against the query, filtering the context down to the top 3 most highly relevant paragraphs (Step 11) to completely eliminate LLM hallucination.
+3. **Generation & Translation (Steps 12-13):** The reranked context is fed into `Flan-T5-Base` to generate a precise, markdown/LaTeX formatted answer. If requested, summaries are translated on-the-fly via local `Helsinki-NLP` models.
 
 ```mermaid
 flowchart TD
@@ -35,7 +35,7 @@ flowchart TD
             BART[BART-Large-CNN\nSummarization]
             T5[Flan-T5-Base\nRAG Q&A]
             Embed[MiniLM-L6-v2\nEmbeddings]
-            Rerank[MS-MARCO-MiniLM\nCross-Encoder]
+            Reranker[Cross-Encoder Reranker\nms-marco-MiniLM]
             Translate[Helsinki-NLP\nTranslation]
         end
     end
@@ -52,8 +52,8 @@ flowchart TD
     
     UI_QA -->|9. Ask Question| API_QA
     API_QA -->|10. Broad Fetch 15 Chunks| FAISS
-    FAISS -->|11. Filter to Top 3| Rerank
-    Rerank -->|12. Context + Question| T5
+    FAISS -->|11. Filter to Top 3| Reranker
+    Reranker -->|12. Context + Question| T5
     T5 -->|13. Grounded Answer| UI_QA
 ```
 
