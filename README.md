@@ -10,7 +10,11 @@ By leveraging state-of-the-art open-source NLP models running locally, ResPilot 
 
 ## System Architecture
 
-The following diagram illustrates how the frontend interacts with the local FastAPI backend and the underlying local AI models.
+The following diagram illustrates how the frontend interacts with the local FastAPI backend, and outlines the two-stage retrieval pipeline:
+
+1. **Ingestion:** Documents are extracted, chunked, and embedded into a local **FAISS** vector database using `all-MiniLM-L6-v2`. Concurrently, the full text is hierarchically summarized by `BART-Large-CNN`.
+2. **Two-Stage Retrieval (RAG):** When a user asks a question, the system first retrieves a broad set of 15 chunks from FAISS. Then, a `ms-marco` **Cross-Encoder Reranker** scores each chunk against the query, filtering the context down to the top 3 most highly relevant paragraphs to completely eliminate LLM hallucination.
+3. **Generation & Translation:** The reranked context is fed into `Flan-T5-Base` to generate a precise, markdown/LaTeX formatted answer. If requested, summaries are translated on-the-fly via local `Helsinki-NLP` models.
 
 ```mermaid
 flowchart TD
