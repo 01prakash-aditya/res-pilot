@@ -47,7 +47,7 @@ flowchart TD
     API_Summary -->|8. Request Translation| Translate
     
     UI_QA -->|9. Ask Question| API_QA
-    API_QA -->|10. Broad Fetch (15 Chunks)| FAISS
+    API_QA -->|10. Broad Fetch 15 Chunks| FAISS
     FAISS -->|11. Filter to Top 3| Rerank
     Rerank -->|12. Context + Question| T5
     T5 -->|13. Grounded Answer| UI_QA
