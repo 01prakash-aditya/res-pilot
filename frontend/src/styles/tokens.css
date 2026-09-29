@@ -317,3 +317,26 @@ code, pre, .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
+.light {
+  --bg-void: #F8F9FA;
+  --bg-base: #FFFFFF;
+  --bg-surface: #F1F3F5;
+  --bg-elevated: #E9ECEF;
+  --bg-card: #FFFFFF;
+  --border: rgba(0,0,0,0.08);
+  --border-mid: rgba(0,0,0,0.12);
+  --border-bright: rgba(0,0,0,0.18);
+  --text-primary: #1C1C26;
+  --text-secondary: #495057;
+  --text-muted: #868E96;
+}
+
+
+.light .gradient-text {
+  background: linear-gradient(135deg, #1C1C26 0%, rgba(28,28,38,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
