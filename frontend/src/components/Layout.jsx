@@ -83,7 +83,7 @@ export default function Layout({ children }) {
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative" }}>
           {docCount > 1 && (
-            <Link to="/?tab=compare" style={{ textDecoration: "none" }}>
+            <Link to="/compare" style={{ textDecoration: "none" }}>
               <div className="btn-ghost" style={{ fontSize: 12, padding: "5px 12px" }}>
                 <Layers size={13} style={{ color: "var(--accent-light)" }} />
                 Compare {docCount} Papers

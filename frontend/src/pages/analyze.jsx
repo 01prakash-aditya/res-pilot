@@ -164,7 +164,7 @@ export default function AnalyzePage() {
         <div style={{
           padding: "20px 32px 0", flexShrink: 0,
           borderBottom: "1px solid var(--border)",
-          background: "rgba(5,5,7,0.6)", backdropFilter: "blur(20px)",
+          background: "var(--bg-translucent)", backdropFilter: "blur(20px)",
         }}>
           <button
             onClick={() => navigate("/")}

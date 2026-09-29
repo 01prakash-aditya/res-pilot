@@ -340,3 +340,13 @@ code, pre, .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
   background-clip: text;
 }
 
+
+:root {
+  --bg-translucent: rgba(5,5,7,0.6);
+  --bg-sidebar: rgba(5,5,7,0.9);
+}
+.light {
+  --bg-translucent: rgba(255,255,255,0.75);
+  --bg-sidebar: rgba(248,249,250,0.95);
+}
+
